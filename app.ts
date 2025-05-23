@@ -15,7 +15,8 @@ const app = express();
 // Enable CORS
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    // origin: "http://localhost:3000",
+    origin:"https://pohloh-oswg-onds0vxfh-faiqa-s-projects.vercel.app",
     credentials: true,
   })
 );
