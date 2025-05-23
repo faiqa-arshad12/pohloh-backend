@@ -3,7 +3,7 @@ import { create, deleteOne, fetchTeamsCategoryByOrgId, getTeamById, getTeamByOrg
 
 const router = Router();
 // Create a user
-router.get('/organizations/categories/:orgId', fetchTeamsCategoryByOrgId);
+router.post('/organizations/categories/:orgId', fetchTeamsCategoryByOrgId);
 router.get('/organizations/:orgId', getTeamByOrgId);
 
 router.get('/:teamId', getTeamById);

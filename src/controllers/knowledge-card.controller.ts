@@ -3,6 +3,7 @@ import {
   createKnowledgeCard,
   deleteByCardId,
   fetchCardsbyOrg,
+  fetchUsersByKnowledgeCard,
   findByCardId,
   updateCardById,
 } from "../services/knowledge-card.service";
@@ -29,7 +30,8 @@ export async function fetchByOrg(req: Request, res: Response): Promise<void> {
   try {
     // const status = req.body.status;
     const {orgId} = req.params;
-    const cards: any = await fetchCardsbyOrg(orgId);
+    const {role, userId} = req.body;
+    const cards: any = await fetchCardsbyOrg(orgId,userId, role);
     res.status(201).json({success: true, cards});
   } catch (error: any) {
     res.status(500).json({success: false, message: error.message});
@@ -50,6 +52,19 @@ export async function findOne(req: Request, res: Response): Promise<void> {
     // const status = req.body.status;
     const {cardId} = req.params;
     const card: any = await findByCardId(cardId);
+    res.status(201).json({success: true, card});
+  } catch (error: any) {
+    res.status(500).json({success: false, message: error.message});
+  }
+}
+export async function fetchUsersCard(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    // const status = req.body.status;
+    const {cardId} = req.params;
+    const card: any = await fetchUsersByKnowledgeCard(cardId);
     res.status(201).json({success: true, card});
   } catch (error: any) {
     res.status(500).json({success: false, message: error.message});

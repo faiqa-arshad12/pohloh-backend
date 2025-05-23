@@ -215,95 +215,94 @@ export const updateOrganizations = async (
     .select()
     .single();
 
-  console.log(updates, 'updates')
   if (orgError) throw new Error(orgError.message);
 
   // 2. If departments are included in updates, sync them with the 'teams' table
-  if (Array.isArray(updates.departments)) {
-    // Fetch existing teams under this org
-    const { data: existingTeams, error: fetchTeamsError } = await supabase
-      .from("teams")
-      .select("id, name")
-      .eq("org_id", id);
+  // if (Array.isArray(updates.departments)) {
+  //   // Fetch existing teams under this org
+  //   const { data: existingTeams, error: fetchTeamsError } = await supabase
+  //     .from("teams")
+  //     .select("id, name")
+  //     .eq("org_id", id);
 
-    if (fetchTeamsError) {
-      console.error("Failed to fetch existing teams:", fetchTeamsError.message);
-    } else {
-      const existingMap = new Map(
-        (existingTeams || []).map((team) => [team.name.toLowerCase(), team.id])
-      );
+  //   if (fetchTeamsError) {
+  //     console.error("Failed to fetch existing teams:", fetchTeamsError.message);
+  //   } else {
+  //     const existingMap = new Map(
+  //       (existingTeams || []).map((team) => [team.name.toLowerCase(), team.id])
+  //     );
 
-      // Track which teams should be kept
-      const departmentsLowerCase = new Set(
-        updates.departments.map(dept => dept.toLowerCase())
-      );
+  //     // Track which teams should be kept
+  //     const departmentsLowerCase = new Set(
+  //       updates.departments.map(dept => dept.toLowerCase())
+  //     );
 
-      // Identify teams to insert, update, or delete
-      const teamsToInsert = [];
-      const teamsToUpdate = [];
-      const teamsToDelete = [];
+  //     // Identify teams to insert, update, or delete
+  //     const teamsToInsert = [];
+  //     const teamsToUpdate = [];
+  //     const teamsToDelete = [];
 
-      // Find teams to update or insert
-      for (const deptName of updates.departments) {
-        const baseData = {
-          name: deptName,
-          org_id: id,
-        };
+  //     // Find teams to update or insert
+  //     for (const deptName of updates.departments) {
+  //       const baseData = {
+  //         name: deptName,
+  //         org_id: id,
+  //       };
 
-        const existingId = existingMap.get(deptName.toLowerCase());
+  //       const existingId = existingMap.get(deptName.toLowerCase());
 
-        if (existingId) {
-          teamsToUpdate.push({ id: existingId, ...baseData });
-        } else {
-          teamsToInsert.push(baseData);
-        }
-      }
+  //       if (existingId) {
+  //         teamsToUpdate.push({ id: existingId, ...baseData });
+  //       } else {
+  //         teamsToInsert.push(baseData);
+  //       }
+  //     }
 
-      // Find teams to delete (teams that exist but aren't in the updated departments)
-      for (const team of existingTeams || []) {
-        if (!departmentsLowerCase.has(team.name.toLowerCase())) {
-          teamsToDelete.push(team.id);
-        }
-      }
+  //     // Find teams to delete (teams that exist but aren't in the updated departments)
+  //     for (const team of existingTeams || []) {
+  //       if (!departmentsLowerCase.has(team.name.toLowerCase())) {
+  //         teamsToDelete.push(team.id);
+  //       }
+  //     }
 
-      // Insert new teams
-      if (teamsToInsert.length > 0) {
-        const { error: insertError } = await supabase
-          .from("teams")
-          .insert(teamsToInsert);
+  //     // Insert new teams
+  //     if (teamsToInsert.length > 0) {
+  //       const { error: insertError } = await supabase
+  //         .from("teams")
+  //         .insert(teamsToInsert);
 
-        if (insertError) {
-          console.error("Failed to insert new teams:", insertError.message);
-        }
-      }
+  //       if (insertError) {
+  //         console.error("Failed to insert new teams:", insertError.message);
+  //       }
+  //     }
 
-      // Update existing teams
-      for (const team of teamsToUpdate) {
-        const { error: updateError } = await supabase
-          .from("teams")
-          .update({
-            name: team.name,
-          })
-          .eq("id", team.id);
+  //     // Update existing teams
+  //     for (const team of teamsToUpdate) {
+  //       const { error: updateError } = await supabase
+  //         .from("teams")
+  //         .update({
+  //           name: team.name,
+  //         })
+  //         .eq("id", team.id);
 
-        if (updateError) {
-          console.error(`Failed to update team "${team.name}":`, updateError.message);
-        }
-      }
+  //       if (updateError) {
+  //         console.error(`Failed to update team "${team.name}":`, updateError.message);
+  //       }
+  //     }
 
-      // Delete teams that are no longer in departments
-      if (teamsToDelete.length > 0) {
-        const { error: deleteError } = await supabase
-          .from("teams")
-          .delete()
-          .in("id", teamsToDelete);
+  //     // Delete teams that are no longer in departments
+  //     if (teamsToDelete.length > 0) {
+  //       const { error: deleteError } = await supabase
+  //         .from("teams")
+  //         .delete()
+  //         .in("id", teamsToDelete);
 
-        if (deleteError) {
-          console.error("Failed to delete teams:", deleteError.message);
-        }
-      }
-    }
-  }
+  //       if (deleteError) {
+  //         console.error("Failed to delete teams:", deleteError.message);
+  //       }
+  //     }
+  //   }
+  // }
 
   return orgData as Organization;
 };

@@ -30,7 +30,8 @@ export async function updateTeamById(req: Request, res: Response): Promise<void>
 export async function fetchTeamsCategoryByOrgId(req: Request, res: Response): Promise<void> {
     try {
         const { orgId } = req.params;
-        const teams: any = await fetchTeamsCategByOrgId(orgId);
+        const {role, userId} = req.body
+        const teams: any = await fetchTeamsCategByOrgId(orgId,userId, role);
         res.status(201).json({ success: true, teams });
     } catch (error: any) {
         res.status(500).json({ success: false, message: error.message });

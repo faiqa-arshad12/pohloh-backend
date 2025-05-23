@@ -148,66 +148,68 @@ export const updateCardById = async (id: string, payload: any) => {
 
   return updatedCard;
 };
+
 export const fetchCardsbyOrg = async (
   orgId: string,
   userId: string,
   userRole: string
 ) => {
-  // If user is owner, fetch all cards
-  // if (userRole === 'owner') {
-  //   const { data, error } = await supabase
-  //     .from("knowledge_card")
-  //     .select(`
-  //       *,
-  //       category_id (*),
-  //       folder_id (*),
-  //       card_owner_id(*),
-  //       org_id(*),
-  //       team_access_id(*)
-  //     `)
-  //     .eq("org_id", orgId)
-  //     .order("created_at", { ascending: false });
+  console.log(userRole, "user", userId, orgId);
+  // If user is owner, fetch all cards in the organization
+  if (userRole === "owner") {
+    const {data, error} = await supabase
+      .from("knowledge_card")
+      .select(
+        `
+        *,
+        category_id (*),
+        folder_id (*),
+        card_owner_id(*),
+        org_id(*),
+        team_access_id(*),
+      `
+      )
+      .eq("org_id", orgId)
+      .order("created_at", {ascending: false});
 
-  //   if (error) throw error;
-  //   return data;
-  // }
+    if (error) {
+      console.error("Error fetching cards:", error);
+      return [];
+    }
+    console.log(data, "aga");
+    return data;
+  }
 
-  // // For non-owners
-  // const { data, error } = await supabase
-  //   .from("knowledge_card")
-  //   .select(`
-  //     *,
-  //     category_id (*),
-  //     folder_id (*),
-  //     card_owner_id(*),
-  //     org_id(*),
-  //     team_access_id(*),
-  //     knowledge_card_user_access!inner(user_id)
-  //   `)
-  //   .eq("org_id", orgId)
-  //   .or(`visibility.eq.everyone`)
-  //   .or(`and(visibility.eq.only_me,card_owner_id.eq.${userId})`)
-  //   .or(`and(visibility.eq.selected_users,knowledge_card_user_access.user_id.eq.${userId})`)
-  //   .or(`and(visibility.eq.team_based,knowledge_card_user_access.user_id.eq.${userId})`)
-  //   .order("created_at", { ascending: false });
-
-  // if (error)
-  //   console.log(error)
-  //   { throw error};
-  // return data;
+  // For non-owner users, fetch cards based on visibility rules
   const {data, error} = await supabase
-    .rpc("get_accessible_cards", {
-      p_org_id: orgId,
-      p_user_id: userId,
-      p_is_owner: userRole === "owner",
-    })
-    .select("*");
+    .from("knowledge_card")
+    .select(
+      `
+      *,
+      category_id (*),
+      folder_id (*),
+      card_owner_id(*),
+      org_id(*),
+      team_access_id(*),
+      knowledge_card_user_access!inner(*)
+    `
+    )
+    .eq("org_id", orgId)
+    .or(
+      `visibility.eq.everyone,` + // Cards with visibility 'everyone'
+        `and(visibility.eq.only_me,card_owner_id.eq.${userId}),` + // Cards owned by user with 'only_me'
+        `and(visibility.eq.selected_users,` + // Cards with 'selected_users' that include this user
+        `knowledge_card_user_access.user_id.eq.${userId}),` +
+        `and(visibility.eq.team_based,` + // Cards with 'team_based' that include this user
+        `knowledge_card_user_access.user_id.eq.${userId})`
+    )
+    .order("created_at", {ascending: false});
 
   if (error) {
-    console.log(error);
-    throw error;
+    console.error("Error fetching cards:", error);
+    return [];
   }
-  console.log(data, "daa");
+
   return data;
 };
 export const deleteByCardId = async (cardId: string) => {
@@ -264,7 +266,7 @@ export const fetchUsersByKnowledgeCard = async (cardId) => {
             user_id (
                 *
             ),
-            category_id(*),
+            team_id(*),
                         org_id(*)
 
 

@@ -14,7 +14,6 @@ export async function fetchSubCategories(teamId) {
     return data;
   }
   export const createOne = async (payload: any) => {
-    console.log(payload, 'payload')
     const { data, error } = await supabase
         .from('subcategories')
         .insert([

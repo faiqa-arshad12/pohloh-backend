@@ -96,7 +96,6 @@ export async function getUsersByTeam(req: Request, res: Response): Promise<void>
   const { teamId } = req.params;
   const orgId = req?.query?.orgId as string;
   try {
-    console.log(teamId, 'o' ,orgId)
     const data = await fetchUsersByTeam(orgId, teamId);
     res.status(200).json({ success: true, data });
   } catch (error: any) {

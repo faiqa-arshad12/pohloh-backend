@@ -15,7 +15,6 @@ export async function fetchSubCategories(teamId) {
 }
 export const createOne = async (payload: any) => {
     const { teams, ...announcementData } = payload;
-    console.log(teams, 't', announcementData, 'ssssss')
 
     // Step 1: Insert the announcement
     const { data: insertedAnnouncements, error: insertError } = await supabase
