@@ -11,23 +11,35 @@ import AnnouncemnetsRoutes from "./src/routes/announcement.routes";
 import LearningPathRoutes from "./src/routes/learning-path.routes";
 import FeedbackRoutes from "./src/routes/feedback.routes";
 const app = express();
-
-// Enable CORS
 app.use(
   cors({
-    // origin: "http://localhost:3000",
-    origin:"https://pohloh-hkhxshisd-faiqa-s-projects.vercel.app",
+    origin: "*", // Accept all origins
     credentials: true,
   })
 );
 
-// Parse incoming JSON
-app.use(express.json());
+// ✅ Handle preflight requests for all routes
+app.options("*", cors());
 
-// Parse incoming JSON and URL-encoded data with increased payload limits
-// Before any routes
-app.use(express.json({limit: "50mb"}));
-app.use(express.urlencoded({limit: "50mb", extended: true}));
+// Parse incoming requests
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+// Enable CORS
+// app.use(
+//   cors({
+//     // origin: "http://localhost:3000",
+//     origin:"https://pohloh-hkhxshisd-faiqa-s-projects.vercel.app",
+//     credentials: true,
+//   })
+// );
+
+// // Parse incoming JSON
+// app.use(express.json());
+
+// // Parse incoming JSON and URL-encoded data with increased payload limits
+// // Before any routes
+// app.use(express.json({limit: "50mb"}));
+// app.use(express.urlencoded({limit: "50mb", extended: true}));
 
 // API routes
 app.use("/api/organizations", onboardingRoutes);
