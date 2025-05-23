@@ -1,5 +1,13 @@
 import {Request, Response} from "express";
-import {createLearningPath, fetchLearningPathById, fetchLearningPathByOrg, fetchUserEnrolledLearningPaths, fetchUserLearningPath} from "../services/learning-path.service";
+import {
+  createLearningByUser,
+  createLearningPath,
+  deleteOne,
+  fetchLearningPathById,
+  fetchLearningPathByOrg,
+  fetchUserEnrolledLearningPaths,
+  fetchUserLearningPath,
+} from "../services/learning-path.service";
 
 export async function create(req: Request, res: Response): Promise<void> {
   try {
@@ -30,7 +38,10 @@ export async function fetchByOrg(req: Request, res: Response): Promise<void> {
     res.status(500).json({success: false, message: error.message});
   }
 }
-export async function fetchbyLearningPath(req: Request, res: Response): Promise<void> {
+export async function fetchbyLearningPath(
+  req: Request,
+  res: Response
+): Promise<void> {
   try {
     // const status = req.body.status;
     const {pathId} = req.params;
@@ -40,7 +51,10 @@ export async function fetchbyLearningPath(req: Request, res: Response): Promise<
     res.status(500).json({success: false, message: error.message});
   }
 }
-export async function fetchEnrolledLearningPaths(req: Request, res: Response): Promise<void> {
+export async function fetchEnrolledLearningPaths(
+  req: Request,
+  res: Response
+): Promise<void> {
   try {
     // const status = req.body.status;
     const {userId} = req.params;
@@ -93,3 +107,29 @@ export async function fetchEnrolledLearningPaths(req: Request, res: Response): P
 //       res.status(500).json({success: false, message: error.message});
 //     }
 //   }
+
+export async function createUserLearningPath(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    const data = req.body;
+    const path: any = await createLearningByUser(data);
+    res.status(201).json({success: true, path});
+  } catch (error: any) {
+    res.status(500).json({success: false, message: error.message});
+  }
+}
+export async function deleteById(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    const {pathId} = req.params;
+    console.log(pathId,'i')
+    const path: any = await deleteOne(pathId);
+    res.status(201).json({success: true, path});
+  } catch (error: any) {
+    res.status(500).json({success: false, message: error.message});
+  }
+}

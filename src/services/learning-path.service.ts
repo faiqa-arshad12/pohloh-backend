@@ -2,7 +2,6 @@ import {supabase} from "../utils/supabaseHelper";
 
 export const createLearningPath = async (payload: any) => {
   const {cards, ...newData} = payload;
-  console.log(cards, "card");
 
   // Insert into learning_paths
   const {data: learningPath, error} = await supabase
@@ -23,7 +22,7 @@ export const createLearningPath = async (payload: any) => {
   // Insert associated cards into card_learning_paths
   if (Array.isArray(cards) && cards.length > 0) {
     const cardLinks = cards.map((card: any) => ({
-      card: card ||card.id,
+      card: card || card.id,
       learning_path: learningPath.id,
       org_id: learningPath.org_id,
     }));
@@ -64,9 +63,7 @@ export const fetchLearningPathByOrg = async (orgId: string) => {
     .select(
       `
               *,
-              card (
-                  *
-              ),
+
               path_owner (
                   *
               ),
@@ -183,4 +180,39 @@ export const fetchLearningPathById = async (pathId: string) => {
     learningPath,
     cardLearningPaths,
   };
+};
+export const createLearningByUser = async (payload: any) => {
+  // Insert into learning_paths
+  const {data: learningPath, error} = await supabase
+    .from("user_learning_path")
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Supabase insert error:", error);
+    throw new Error(error.message);
+  }
+
+  if (!learningPath) {
+    throw new Error("No data returned from insert.");
+  }
+
+  // Insert associated cards into card_learning_paths
+
+  // Fetch the inserted card_learning_paths with full card data
+  return learningPath;
+};
+export const deleteOne = async (pathId: string) => {
+  const {data, error} = await supabase
+    .from("learning_paths")
+    .delete()
+    .eq("id", pathId);
+
+  if (error) {
+    console.error("Error deleting path:", error);
+    throw new Error('Error deleting path:');
+  }
+
+  return data;
 };
