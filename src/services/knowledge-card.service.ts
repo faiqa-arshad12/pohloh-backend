@@ -207,7 +207,6 @@ export const fetchCardsbyOrg = async (
     console.log(error);
     throw error;
   }
-  console.log(data, "daa");
   return data;
 };
 export const deleteByCardId = async (cardId: string) => {
@@ -264,7 +263,7 @@ export const fetchUsersByKnowledgeCard = async (cardId) => {
             user_id (
                 *
             ),
-            category_id(*),
+            team_id(*),
                         org_id(*)
 
 
