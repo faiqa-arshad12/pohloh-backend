@@ -10,20 +10,23 @@ import KnowledgeCardRoutes from "./src/routes/knowledge-card.routes";
 import AnnouncemnetsRoutes from "./src/routes/announcement.routes";
 import LearningPathRoutes from "./src/routes/learning-path.routes";
 import FeedbackRoutes from "./src/routes/feedback.routes";
+const corsOptions = {
+  credentials: true,
+  origin: "*",
+};
 const app = express();
-app.use(
-  cors({
-    origin: "*", // Accept all origins
-    credentials: true,
-  })
-);
 
+app.use(cors(corsOptions));
+
+app.get("/", (req, res) => {
+  res.send("Pohloh backend");
+});
 // ✅ Handle preflight requests for all routes
-app.options("*", cors());
+// app.options("*", cors());
 
 // Parse incoming requests
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json({limit: "50mb"}));
+app.use(express.urlencoded({limit: "50mb", extended: true}));
 // Enable CORS
 // app.use(
 //   cors({
